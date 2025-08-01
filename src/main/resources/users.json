@@ -1,0 +1,17 @@
+{
+  "user": {
+    "id": 1213211546,
+    "username": "norremorrse",
+    "first_name": "500219 котя",
+    "last_name": null,
+    "phone": "+380981707344"
+  },
+  "user2": {
+    "id" : 633114062,
+    "username" : "@kikimaru",
+    "first_name" : "даня",
+    "last_name" : "-",
+    "phone" : "380966518664",
+    "botStarted" : true
+  }
+}
