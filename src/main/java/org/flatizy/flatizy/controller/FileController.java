@@ -10,17 +10,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController()
 public class FileController {
 
-    FileService fileService;
+    private final FileService fileService;
 
     public FileController(FileService fileService) {
         this.fileService = fileService;
     }
 
-    private static final String PATH_FILE = "C:/Users/Danya/Documents/спам/";
+    private static final String PATH_FILE = "src/main/resources/files/";
 
-    @GetMapping("/get")
-    public ResponseEntity<Void> getFiles() {
-        fileService.getFiles(PATH_FILE);
+    @GetMapping("/rename")
+    public ResponseEntity<Void> renameFiles() {
+        fileService.processFiles(PATH_FILE, fileService::renameFile);
         return ResponseEntity.ok().build();
     }
 }

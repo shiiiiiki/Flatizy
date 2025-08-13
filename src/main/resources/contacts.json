@@ -986,6 +986,13 @@
   "phone" : "380931292725",
   "botStarted" : false
 }, {
+  "id" : 633114062,
+  "username" : "@kikimaru",
+  "first_name" : "даня 500219",
+  "last_name" : "-",
+  "phone" : "380966518664",
+  "botStarted" : false
+}, {
   "id" : 635710372,
   "username" : "@yaroslav_rashkov",
   "first_name" : "Ярик",
@@ -2694,10 +2701,10 @@
   "phone" : "380972971032",
   "botStarted" : false
 }, {
-  "id" : 633114062,
-  "username" : "@kikimaru",
-  "first_name" : "даня",
+  "id" : 8297969811,
+  "username" : "-",
+  "first_name" : "мама2",
   "last_name" : "-",
-  "phone" : "+380966518664",
-  "botStarted" : true
+  "phone" : "380935419482",
+  "botStarted" : false
 } ]

@@ -9,48 +9,46 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 @Service
 public class FileService {
 
-
-    public void getFiles(String path) {
+    public void processFiles(String path, Consumer<File> action) {
         File folder = new File(path);
         File[] listOfFiles = folder.listFiles();
         for (File file : Objects.requireNonNull(listOfFiles)) {
             if (file.isFile()) {
-                renameFile(file);
+                action.accept(file);
             }
         }
     }
 
-    private void renameFile(File file) {
-        String fileText = parseFile(file);
-        int corpus = extractNumberAfter(fileText, "корпус");
-        int kv = extractNumberAfter(fileText, "кв.");
-        if (corpus > 0 && kv >= 0) {
+    public void renameFile(File file) {
+        String fileText = parsePdfFile(file);
+        int building = extractNumberAfter(fileText, "корпус");
+        int apartment = extractNumberAfter(fileText, "кв.");
+        if (building > 0 && apartment >= 0) {
 
-            String newFileName = String.format("%d%03d", corpus * 100, kv);
+            String newFileName = String.format("%d%03d", building * 100, apartment);
             File renamed = new File(file.getParent(), newFileName + getFileExtension(file.getName()));
 
             boolean success = file.renameTo(renamed);
             if (success) {
-                System.out.println("Файл переименован: " + renamed.getName());
+                System.out.println("File renamed: " + renamed.getName());
             } else {
-                System.out.println("Ошибка при переименовании файла.");
+                System.out.println("Error during rename file");
             }
         } else {
-            System.out.println("Не удалось извлечь корпус или квартиру из текста.");
+            System.out.println("Cann't get apartment or building from text");
         }
     }
 
-    private String findApartmentNumber(File file) {
-        String fileText = parseFile(file);
-        int accNumber = extractNumberAfter(fileText, "рахунку");
-        return null;
+    String createTelegramName(int buildNumber, int apartmentNumber) {
+        return buildNumber == 5 ? String.format("%d%03d", buildNumber * 100, apartmentNumber) : String.format("%03d", apartmentNumber);
     }
 
-    private String parseFile(File file) {
+    String parsePdfFile(File file) {
         PDDocument document;
         try {
             document = Loader.loadPDF(new RandomAccessReadBufferedFile(file));
@@ -68,14 +66,13 @@ public class FileService {
 
         PDFTextStripper pdfStripper = new PDFTextStripper();
         try {
-            System.out.println(pdfStripper.getText(document));
             return pdfStripper.getText(document);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private int extractNumberAfter(String text, String key) {
+    Integer extractNumberAfter(String text, String key) {
         int index = text.toLowerCase().indexOf(key.toLowerCase());
         if (index == -1) return -1;
 
