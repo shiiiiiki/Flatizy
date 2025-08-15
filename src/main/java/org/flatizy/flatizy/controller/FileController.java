@@ -2,7 +2,7 @@ package org.flatizy.flatizy.controller;
 
 import org.flatizy.flatizy.service.FileService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,7 +18,7 @@ public class FileController {
 
     private static final String PATH_FILE = "src/main/resources/files/";
 
-    @GetMapping("/rename")
+    @PostMapping("/rename")
     public ResponseEntity<Void> renameFiles() {
         fileService.processFiles(PATH_FILE, fileService::renameFile);
         return ResponseEntity.ok().build();

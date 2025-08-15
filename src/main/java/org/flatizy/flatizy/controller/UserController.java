@@ -15,7 +15,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final String CONTACTS_PATH = "src/main/resources/contacts.json";
+    private final String CONTACTS_PATH = "src/main/resources/users.json";
 
     public UserController(UserService userService) {
         this.userService = userService;

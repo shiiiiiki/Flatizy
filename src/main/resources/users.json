@@ -2,16 +2,25 @@
   "user": {
     "id": 1213211546,
     "username": "norremorrse",
-    "first_name": "500219 котя",
+    "first_name": "кв 219 корпус 7 парковка 2 котя",
     "last_name": null,
-    "phone": "+380981707344"
+    "phone": "+380981707344",
+    "botStarted" : false
   },
   "user2": {
     "id" : 633114062,
     "username" : "@kikimaru",
-    "first_name" : "даня",
+    "first_name" : "даня 500219",
     "last_name" : "-",
     "phone" : "380966518664",
-    "botStarted" : true
+    "botStarted" : false
+  },
+  "user3": {
+    "id" : 676814062,
+    "username" : "",
+    "first_name" : "андрюха белий3 219",
+    "last_name" : "-",
+    "phone" : "380453518664",
+    "botStarted" : false
   }
 }
