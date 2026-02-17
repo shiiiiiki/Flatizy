@@ -1,13 +1,13 @@
 package org.flatizy.flatizy.controller;
 
-import org.flatizy.flatizy.entity.Apartment;
-import org.flatizy.flatizy.service.ApartmentService;
-import org.flatizy.flatizy.service.FileService;
+import org.flatizy.flatizy.entity.dto.apartment.ExternalApartmentDto;
+import org.flatizy.flatizy.entity.dto.apartment.ManualApartmentDto;
+import org.flatizy.flatizy.entity.dto.response.ApartmentSaveResponse;
+import org.flatizy.flatizy.entity.mapper.ApartmentMapper;
+import org.flatizy.flatizy.service.apartment.ApartmentService;
+import org.flatizy.flatizy.service.apartment.ExternalApartmentService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -16,24 +16,65 @@ import java.util.List;
 public class ApartmentController {
 
     private final ApartmentService apartmentService;
-    private final FileService fileService;
+    private final ExternalApartmentService externalApartmentService;
+    private final ApartmentMapper apartmentMapper;
 
-    private static final String PATH_FILE = "src/main/resources/files/";
-
-    public ApartmentController(ApartmentService apartmentService, FileService fileService) {
+    public ApartmentController(ApartmentService apartmentService, ExternalApartmentService externalApartmentService, ApartmentMapper apartmentMapper) {
         this.apartmentService = apartmentService;
-        this.fileService = fileService;
+        this.externalApartmentService = externalApartmentService;
+        this.apartmentMapper = apartmentMapper;
     }
 
     @GetMapping("get")
-    public ResponseEntity<List<Apartment>> getAll() {
-        return ResponseEntity.ok(apartmentService.getAll());
+    public ResponseEntity<List<ManualApartmentDto.ApartmentDataDto>> getAll() {
+        return ResponseEntity.ok(apartmentService.getAll().stream()
+                .map(apartmentMapper::fromEntityToManualDto)
+                .toList());
     }
 
-    @PostMapping("save")
-    public ResponseEntity<Void> saveApartments() {
-        fileService.processFiles(PATH_FILE, apartmentService::save);
-        return ResponseEntity.ok().build();
+
+    @PostMapping("save-manual")
+    public ResponseEntity<ApartmentSaveResponse> saveApartmentManual(@RequestBody ManualApartmentDto apartments) {
+        ApartmentSaveResponse response = apartmentService.saveApartmentsManually(apartments);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("fetch-save-external")
+    public ResponseEntity<ApartmentSaveResponse> fetchAndSaveApartmentsFromExternal() {
+        ApartmentSaveResponse response = externalApartmentService.fetchAndSaveApartmentsFromExternalApi();
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("push")
+    public ResponseEntity<ApartmentSaveResponse> pushApartmentsFromBuilder(
+            @RequestBody ExternalApartmentDto requestDto) {
+        ApartmentSaveResponse response = externalApartmentService.saveApartmentsFromExternal(requestDto);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/fetch-external-mock")
+    public String fetchMockJson() {
+        return """
+    {
+      "apartments": [
+        {
+          "apartmentNumber": 103,
+          "buildingNumber": 0,
+          "houseNumber": 5,
+          "area": 55.0,
+          "residentialComplex": "ЖК Премиум",
+          "ceilingHeight": 2.7,
+          "rooms": 2,
+          "floor": 3,
+          "hasBalcony": true,
+          "furnishingType": "premium",
+          "views": "city",
+          "parking": true,
+          "renovationDate": "2023-01-15"
+        }
+      ]
+    }
+    """;
     }
 
 }

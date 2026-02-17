@@ -24,30 +24,6 @@ public class FileService {
         }
     }
 
-    public void renameFile(File file) {
-        String fileText = parsePdfFile(file);
-        int building = extractNumberAfter(fileText, "корпус");
-        int apartment = extractNumberAfter(fileText, "кв.");
-        if (building > 0 && apartment >= 0) {
-
-            String newFileName = String.format("%d%03d", building * 100, apartment);
-            File renamed = new File(file.getParent(), newFileName + getFileExtension(file.getName()));
-
-            boolean success = file.renameTo(renamed);
-            if (success) {
-                System.out.println("File renamed: " + renamed.getName());
-            } else {
-                System.out.println("Error during rename file");
-            }
-        } else {
-            System.out.println("Cann't get apartment or building from text");
-        }
-    }
-
-    String createTelegramName(int buildNumber, int apartmentNumber) {
-        return buildNumber == 5 ? String.format("%d%03d", buildNumber * 100, apartmentNumber) : String.format("%03d", apartmentNumber);
-    }
-
     String parsePdfFile(File file) {
         PDDocument document;
         try {
@@ -88,14 +64,4 @@ public class FileService {
         }
         return !number.isEmpty() ? Integer.parseInt(number.toString()) : -1;
     }
-
-    private String getFileExtension(String fileName) {
-        int lastDot = fileName.lastIndexOf('.');
-        if (lastDot > 0 && lastDot < fileName.length() - 1) {
-            return fileName.substring(lastDot);
-        }
-        return "";
-    }
-
-
 }
