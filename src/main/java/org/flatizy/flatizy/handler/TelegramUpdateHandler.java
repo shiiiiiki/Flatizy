@@ -116,9 +116,8 @@ public class TelegramUpdateHandler {
             // ✅ Специальные команды которые работают в любом состоянии
             // Если нажата кнопка отмены или других главных меню команд
             if (text.equals("🔗 Создать Invite") || text.equals("📋 Мои Invite") ||
-                text.equals("🔔 Notifications") || text.equals("💰 Bills") || text.equals("💰 My Bills") ||
-                text.equals("💬 Feedback") || text.equals("ℹ️ Help") || text.equals("ℹ️ Помощь") ||
-                text.equals("📊 Статистика") || text.equals("⚙️ Настройки") ||
+                text.equals("🔔 Notifications") || text.equals("💬 Feedback") || text.equals("ℹ️ Help") ||
+                text.equals("ℹ️ Помощь") || text.equals("📊 Статистика") || text.equals("⚙️ Настройки") ||
                 text.equals("❌ Отмена создание инвайта")) {
 
                 // Если мы в процессе создания инвайта и нажали отмену
@@ -439,7 +438,7 @@ public class TelegramUpdateHandler {
 
             sb.append("📝 Описание: ").append(request.getDescription()).append("\n");
             sb.append("📅 Создана: ").append(request.getCreatedAt().toLocalDate()).append("\n");
-
+            sb.append("📝 Комментарий: ").append(request.getFeedback()).append("\n");
             if (request.getCompletedAt() != null) {
                 sb.append("✅ Выполнена: ").append(request.getCompletedAt().toLocalDate()).append("\n");
             }
@@ -709,10 +708,9 @@ public class TelegramUpdateHandler {
 
         KeyboardRow row3 = new KeyboardRow();
         row3.add("🔔 Notifications");
-        row3.add("💰 Bills");
+        row3.add("💬 Feedback");
 
         KeyboardRow row4 = new KeyboardRow();
-        row4.add("💬 Feedback");
         row4.add("ℹ️ Help");
 
         markup.setKeyboard(List.of(row1, row2, row3, row4));
@@ -769,7 +767,6 @@ public class TelegramUpdateHandler {
             case "📝 Create Request" -> handleCreateRequest(chatId, user);  // ✅ НОВОЕ
             case "📋 My Request" -> handleMyRequests(chatId, user);  // ✅ НОВОЕ
             case "🔔 Notifications" -> handleNotifications(chatId);
-            case "💰 Bills", "💰 My Bills" -> handleBills(chatId);
             case "💬 Feedback" -> handleFeedback(chatId);
             case "ℹ️ Help", "ℹ️ Помощь" -> handleHelp(chatId);
             case "📊 Статистика" -> handleStatistics(chatId, user);
@@ -1163,10 +1160,6 @@ public class TelegramUpdateHandler {
         }
     }
 
-    private void handleBills(Long chatId) {
-        sendMessage(chatId, "💰 Счета (в разработке)");
-    }
-
     private void handleFeedback(Long chatId) {
         userSessionService.updateState(chatId, UserSessionState.CREATING_FEEDBACK);
 
@@ -1355,5 +1348,19 @@ public class TelegramUpdateHandler {
                 "У вас слишком много квартир для отображения кнопками.\n" +
                         "Пожалуйста, введите номер квартиры в чат, чтобы добавить её к invite ссылке.\n" +
                         "Например: 12");
+    }
+
+    public void sendMessageToUser(String phoneNumber, String message) {
+        Optional<User> userOpt = userService.findByPhone(phoneNumber);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            if (user.getTelegramId() != null) {
+                sendMessage(user.getTelegramId(), message);
+            }
+        }
+    }
+
+    public void sendMessageByChatId(Long chatId, String message) {
+        sendMessage(chatId, message);
     }
 }

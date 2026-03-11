@@ -7,17 +7,17 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class ExternalApartmentDto {
+public class ApartmentRegistrationDto {
 
-    private List<ExternalApartmentDto.ApartmentDataDto> apartments;
+    private List<ApartmentRegistrationDto.ApartmentDataDto> apartments;
 
     @Data
     @NoArgsConstructor
     public static class ApartmentDataDto {
-        private Integer apartmentNumber;
-        private Integer buildingNumber;
-        private Integer houseNumber;
-        private Double area;
+        private Integer id;
+        private int apartmentNumber;
+        private int buildingNumber;
+        private int houseNumber;
         private String residentialComplex;
     }
 }

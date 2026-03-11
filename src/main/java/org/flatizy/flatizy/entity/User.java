@@ -28,6 +28,8 @@ public class User {
     @Column(name = "identification_number", unique = true)
     private String identificationNumber;
     @Column(unique = true)
+    private String password;
+    @Column(unique = true)
     //todo add a way to send bill to email if no telegram
     private String email;
     @Column(name = "first_name")
@@ -46,5 +48,4 @@ public class User {
     private LocalDateTime lastUpdate;
     @OneToMany(mappedBy = "user")
     private Set<UserApartment> userApartments;
-
 }

@@ -55,4 +55,7 @@ public class Request {
 
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
+
+    @Column(name = "feedback", columnDefinition = "TEXT")
+    private String feedback;
 }

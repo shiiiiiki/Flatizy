@@ -1,5 +1,6 @@
 package org.flatizy.flatizy.entity.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 @Getter
@@ -15,4 +16,8 @@ public enum RequestStatus {
         this.displayName = displayName;
     }
 
+    @JsonValue
+    public String getName() {
+        return name();
+    }
 }

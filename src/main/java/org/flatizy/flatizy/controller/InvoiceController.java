@@ -5,12 +5,12 @@ import org.flatizy.flatizy.entity.dto.InvoiceUploadResultDto;
 import org.flatizy.flatizy.service.InvoiceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/invoices")
@@ -25,10 +25,10 @@ public class InvoiceController {
 
     @PostMapping("/process")
     public ResponseEntity<List<InvoiceUploadResultDto>> processInvoices(
-            @RequestBody Map<String, String> request
+            @RequestParam("file") MultipartFile file
     ) {
         List<InvoiceUploadResultDto> result =
-                invoiceService.processFolder(request);
+                invoiceService.processZip(file);
 
         return ResponseEntity.ok(result);
     }

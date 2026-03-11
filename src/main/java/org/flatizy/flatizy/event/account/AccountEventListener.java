@@ -25,20 +25,34 @@ public class AccountEventListener {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onAccountCreated(AccountCreatedEvent event) {
-
         for (Integer accountId : event.accountId()) {
-            try {
-                Account account = accountService.findById(accountId)
-                        .orElseThrow();
-
-                account.setSentAt(LocalDateTime.now());
-
-                billingService.sendAccount(account);
-                account.setStatus(AccountStatus.SENT);
-
-            } catch (Exception e) {
-                log.error("Billing failed for account {}", accountId, e);
-                accountService.findById(accountId).ifPresent(acc -> accountService.updateStatusOnFailure(acc,AccountStatus.FAILED));
+            Account account = accountService.findById(accountId).orElseThrow();
+            int attempts = 0;
+            boolean success = false;
+            while (attempts < 3 && !success) {
+                try {
+                    attempts++;
+                    log.info("Sending account {} attempt {}", accountId, attempts);
+                    var response = billingService.sendAccount(account);
+                    if ("COMPLETED".equals(response.getStatus())) {
+                        account.setStatus(AccountStatus.COMPLETED);
+                        account.setSentAt(LocalDateTime.now());
+                        success = true;
+                        log.info("Account {} completed", accountId);
+                    } else {
+                        throw new RuntimeException("Billing failed");
+                    }
+                } catch (Exception e) {
+                    log.error("Attempt {} failed for account {}", attempts, accountId);
+                    if (attempts == 3) {
+                        account.setStatus(AccountStatus.FAILED);
+                        log.error("Account {} marked as FAILED", accountId);
+                    }
+                    try {
+                        Thread.sleep(1000); // пауза
+                    } catch (InterruptedException ignored) {
+                    }
+                }
             }
         }
     }

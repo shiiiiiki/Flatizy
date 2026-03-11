@@ -1,5 +1,6 @@
 package org.flatizy.flatizy.controller;
 
+import org.flatizy.flatizy.entity.dto.apartment.ApartmentRegistrationDto;
 import org.flatizy.flatizy.entity.dto.apartment.ExternalApartmentDto;
 import org.flatizy.flatizy.entity.dto.apartment.ManualApartmentDto;
 import org.flatizy.flatizy.entity.dto.response.ApartmentSaveResponse;
@@ -27,9 +28,12 @@ public class ApartmentController {
 
     @GetMapping("get")
     public ResponseEntity<List<ManualApartmentDto.ApartmentDataDto>> getAll() {
-        return ResponseEntity.ok(apartmentService.getAll().stream()
-                .map(apartmentMapper::fromEntityToManualDto)
-                .toList());
+        return ResponseEntity.ok(apartmentService.getAllAsDto());
+    }
+
+    @GetMapping("get/free")
+    public ResponseEntity<List<ApartmentRegistrationDto.ApartmentDataDto>> getFreeApartments() {
+        return ResponseEntity.ok(apartmentService.getFreeApartments());
     }
 
 

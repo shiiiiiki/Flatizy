@@ -10,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -30,6 +31,9 @@ public class Account {
 
     @Column(name = "has_debt")
     private boolean hasDebt;
+
+    @Column(name = "debt_amount", precision = 10, scale = 2)
+    private BigDecimal debtAmount;
 
     @Column(name = "debt_start_date")
     private LocalDate debtStartDate;

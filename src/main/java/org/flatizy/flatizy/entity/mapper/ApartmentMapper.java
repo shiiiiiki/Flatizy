@@ -1,6 +1,7 @@
 package org.flatizy.flatizy.entity.mapper;
 
 import org.flatizy.flatizy.entity.Apartment;
+import org.flatizy.flatizy.entity.dto.apartment.ApartmentRegistrationDto;
 import org.flatizy.flatizy.entity.dto.apartment.ExternalApartmentDto;
 import org.flatizy.flatizy.entity.dto.apartment.ManualApartmentDto;
 import org.mapstruct.Mapper;
@@ -12,4 +13,6 @@ public interface ApartmentMapper {
     Apartment fromManualDtoToEntity(ManualApartmentDto.ApartmentDataDto apartmentDataDto);
 
     ManualApartmentDto.ApartmentDataDto fromEntityToManualDto(Apartment apartment);
+
+    ApartmentRegistrationDto.ApartmentDataDto fromEntityToRegistrationDto(Apartment apartment);
 }

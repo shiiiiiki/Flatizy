@@ -2,6 +2,7 @@ package org.flatizy.flatizy.service.apartment;
 
 import lombok.extern.slf4j.Slf4j;
 import org.flatizy.flatizy.entity.Apartment;
+import org.flatizy.flatizy.entity.dto.apartment.ApartmentRegistrationDto;
 import org.flatizy.flatizy.entity.dto.apartment.ExternalApartmentDto;
 import org.flatizy.flatizy.entity.dto.apartment.ManualApartmentDto;
 import org.flatizy.flatizy.entity.dto.response.ApartmentSaveResponse;
@@ -32,6 +33,13 @@ public class ApartmentService {
         } catch (DataAccessException e) {
             throw new RuntimeException("Exception during fetching apartments: " + e.getMessage(), e);
         }
+    }
+
+    public List<ApartmentRegistrationDto.ApartmentDataDto> getFreeApartments() {
+        return apartmentRepository.findByUserApartmentsIsEmpty()
+                .stream()
+                .map(apartmentMapper::fromEntityToRegistrationDto)
+                .toList();
     }
 
     public List<ManualApartmentDto.ApartmentDataDto> getAllAsDto() {
