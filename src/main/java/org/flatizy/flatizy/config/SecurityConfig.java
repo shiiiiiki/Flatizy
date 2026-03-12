@@ -2,6 +2,7 @@ package org.flatizy.flatizy.config;
 
 import lombok.RequiredArgsConstructor;
 import org.flatizy.flatizy.security.JwtAuthFilter;
+import org.flatizy.flatizy.security.RateLimitFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +27,7 @@ public class SecurityConfig {
 
     private final TelegramWebhookSecurityFilter telegramWebhookSecurityFilter;
     private final JwtAuthFilter jwtAuthFilter;
+    private final RateLimitFilter rateLimitFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -43,6 +45,8 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(telegramWebhookSecurityFilter,
                         UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(rateLimitFilter,
+                        TelegramWebhookSecurityFilter.class)
                 .addFilterBefore(jwtAuthFilter,
                         UsernamePasswordAuthenticationFilter.class);
 
