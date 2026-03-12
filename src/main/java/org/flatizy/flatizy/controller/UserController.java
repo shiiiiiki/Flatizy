@@ -25,7 +25,7 @@ public class UserController {
         this.registrationService = registrationService;
     }
 
-    @GetMapping()
+    @GetMapping("/get")
     public ResponseEntity<List<UserDto>> getAll() {
         return ResponseEntity.ok(userService.getAll());
     }

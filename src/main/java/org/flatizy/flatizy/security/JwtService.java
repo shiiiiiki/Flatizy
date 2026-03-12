@@ -63,4 +63,8 @@ public class JwtService {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
+    public Integer extractUserId(String token) {
+        return parseClaims(token).get("userId", Integer.class);
+    }
 }

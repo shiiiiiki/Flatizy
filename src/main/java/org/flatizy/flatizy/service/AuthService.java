@@ -20,12 +20,10 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     public LoginResponse login(String email, String password) {
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findAll().stream()
+                .filter(u -> email.equals(u.getEmail()))
+                .findFirst()
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
-        log.info("Input password: '{}'", password);
-        log.info("Stored hash: '{}'", user.getPassword());
-        log.info("Matches: {}", passwordEncoder.matches(password, user.getPassword()));
 
         if (!passwordEncoder.matches(password, user.getPassword()))
             throw new RuntimeException("Wrong password");
