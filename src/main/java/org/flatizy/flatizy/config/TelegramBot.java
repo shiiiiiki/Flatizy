@@ -2,15 +2,19 @@ package org.flatizy.flatizy.config;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.flatizy.flatizy.handler.TelegramUpdateHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class TelegramBot extends TelegramWebhookBot {
 
     private final TelegramUpdateHandler updateHandler;
@@ -23,6 +27,12 @@ public class TelegramBot extends TelegramWebhookBot {
 
     @Value("${telegram.bot.webhook-path}")
     private String webhookPath;
+
+    @Value("${telegram.webhook.url:}")
+    private String webhookUrl;
+
+    @Value("${telegram.webhook.secret-token:}")
+    private String secretToken;
 
     @Override
     public String getBotToken() {
@@ -48,5 +58,27 @@ public class TelegramBot extends TelegramWebhookBot {
     @PostConstruct
     public void init() {
         updateHandler.setBot(this);
+
+        // Регистрирует webhook у Telegram с secret token (если указан URL)
+        if (webhookUrl != null && !webhookUrl.isEmpty()) {
+            registerWebhook();
+        }
+    }
+
+    /**
+     * Регистрирует webhook у Telegram API с secret token для проверки подлинности
+     */
+    private void registerWebhook() {
+        try {
+            SetWebhook setWebhook = SetWebhook.builder()
+                    .url(webhookUrl)
+                    .secretToken(secretToken)
+                    .build();
+
+            execute(setWebhook);
+            log.info("Telegram webhook registered successfully at: {}", webhookUrl);
+        } catch (TelegramApiException e) {
+            log.error("Failed to register webhook", e);
+        }
     }
 }
