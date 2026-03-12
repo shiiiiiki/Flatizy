@@ -1,10 +1,8 @@
 package org.flatizy.flatizy.controller;
 
-import org.flatizy.flatizy.entity.dto.apartment.ApartmentRegistrationDto;
 import org.flatizy.flatizy.entity.dto.apartment.ExternalApartmentDto;
 import org.flatizy.flatizy.entity.dto.apartment.ManualApartmentDto;
 import org.flatizy.flatizy.entity.dto.response.ApartmentSaveResponse;
-import org.flatizy.flatizy.entity.mapper.ApartmentMapper;
 import org.flatizy.flatizy.service.apartment.ApartmentService;
 import org.flatizy.flatizy.service.apartment.ExternalApartmentService;
 import org.springframework.http.ResponseEntity;
@@ -18,22 +16,15 @@ public class ApartmentController {
 
     private final ApartmentService apartmentService;
     private final ExternalApartmentService externalApartmentService;
-    private final ApartmentMapper apartmentMapper;
 
-    public ApartmentController(ApartmentService apartmentService, ExternalApartmentService externalApartmentService, ApartmentMapper apartmentMapper) {
+    public ApartmentController(ApartmentService apartmentService, ExternalApartmentService externalApartmentService) {
         this.apartmentService = apartmentService;
         this.externalApartmentService = externalApartmentService;
-        this.apartmentMapper = apartmentMapper;
     }
 
     @GetMapping("get")
     public ResponseEntity<List<ManualApartmentDto.ApartmentDataDto>> getAll() {
         return ResponseEntity.ok(apartmentService.getAllAsDto());
-    }
-
-    @GetMapping("get/free")
-    public ResponseEntity<List<ApartmentRegistrationDto.ApartmentDataDto>> getFreeApartments() {
-        return ResponseEntity.ok(apartmentService.getFreeApartments());
     }
 
 

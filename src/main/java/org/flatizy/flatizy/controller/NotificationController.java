@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/notifications")
+@RequestMapping("/api/admin/notifications")
 @RequiredArgsConstructor
 @Slf4j
 public class NotificationController {
