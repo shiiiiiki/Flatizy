@@ -21,6 +21,9 @@ aplication.properties
 *.iml
 *.ipr
 
+### Secrets ###
+.env
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

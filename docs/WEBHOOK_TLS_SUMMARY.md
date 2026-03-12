@@ -52,5 +52,19 @@ Invoke-RestMethod -Uri 'https://yourdomain.com/telegram/webhook' -Method POST -H
    - Telegram требует публичный HTTPS endpoint. Локальный `server.ssl.enabled=false` удобен для dev, но для реального webhook нужен публичный HTTPS.
    - Фильтр сверяет только заголовок `X-Telegram-Bot-Api-Secret-Token` — при желании можно добавить IP-фильтрацию / проверку подписи.
 
+6) Секреты / управление ключами (Level 2):
+   - Рекомендация: убрать жестко захардкоженный `telegram.bot.token` из `application.properties` и хранить в `TELEGRAM_BOT_TOKEN` (env variable) или в Vault/Secrets Manager.
+   - Spring: переменная окружения `TELEGRAM_BOT_TOKEN` автоматически мапится в property `telegram.bot.token` — достаточно установить её в окружении процесса/контейнера.
+   - Быстрая замена в `application.properties` (если нужно): `telegram.bot.token=${TELEGRAM_BOT_TOKEN:}` (оставить пустым по-умолчанию).
+
+   Ротация ключей — шаги (коротко):
+   1) В BotFather сгенерировать новый токен.
+   2) Положить новый токен в секретное хранилище / env.
+   3) Выполнить rolling deploy приложения (или перезапустить сервис).
+   4) Проверить регистрацию webhook и логи (успешная отправка/приём update).
+   5) Отозвать старый токен.
+
+   Примечание: это уровень 2 защиты (key management). Для полного покрытия стоит рассмотреть интеграцию со специализированным KMS/Vault и аудит доступа.
+
 --
 Файлы будут дополняться — следующий пункт добавляйте в этот же файл как новый подпункт.
