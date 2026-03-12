@@ -1,5 +1,6 @@
 package org.flatizy.flatizy.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.flatizy.flatizy.entity.dto.LoginRequest;
 import org.flatizy.flatizy.entity.dto.LoginResponse;
@@ -16,8 +17,12 @@ public class AuthController {
     private final AesEncryptionService aesEncryptionService;
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody LoginRequest request) {
-        return authService.login(request.getEmail(), request.getPassword());
+    public LoginResponse login(@RequestBody LoginRequest request,
+                               HttpServletRequest httpRequest) {
+        String ip = httpRequest.getHeader("X-Forwarded-For") != null
+                ? httpRequest.getHeader("X-Forwarded-For").split(",")[0]
+                : httpRequest.getRemoteAddr();
+        return authService.login(request.getEmail(), request.getPassword(), ip);
     }
 
     @GetMapping("/auth/encrypt")

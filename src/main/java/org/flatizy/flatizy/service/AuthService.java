@@ -1,16 +1,15 @@
 package org.flatizy.flatizy.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.flatizy.flatizy.entity.User;
 import org.flatizy.flatizy.entity.dto.LoginResponse;
 import org.flatizy.flatizy.entity.enums.UserRole;
 import org.flatizy.flatizy.repository.UserRepository;
 import org.flatizy.flatizy.security.JwtService;
+import org.flatizy.flatizy.security.SecurityEventLogger;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -18,20 +17,31 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final SecurityEventLogger securityEventLogger;
 
-    public LoginResponse login(String email, String password) {
-        User user = userRepository.findAll().stream()
-                .filter(u -> email.equals(u.getEmail()))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public LoginResponse login(String email, String password, String ip) {
+        try {
+            User user = userRepository.findAll().stream()
+                    .filter(u -> email.equals(u.getEmail()))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!passwordEncoder.matches(password, user.getPassword()))
-            throw new RuntimeException("Wrong password");
+            if (!passwordEncoder.matches(password, user.getPassword())) {
+                securityEventLogger.logLoginAttempt(email, ip, false);
+                throw new RuntimeException("Wrong password");
+            }
 
-        if (user.getRole() != UserRole.ADMIN)
-            throw new RuntimeException("No CRM access");
+            if (user.getRole() != UserRole.ADMIN) {
+                securityEventLogger.logLoginAttempt(email, ip, false);
+                throw new RuntimeException("No CRM access");
+            }
 
-        String token = jwtService.generateToken(user);
-        return new LoginResponse(token, user.getRole().getValue());
+            securityEventLogger.logLoginAttempt(email, ip, true);
+            String token = jwtService.generateToken(user);
+            return new LoginResponse(token, user.getRole().getValue());
+
+        } catch (RuntimeException e) {
+            throw e;
+        }
     }
 }

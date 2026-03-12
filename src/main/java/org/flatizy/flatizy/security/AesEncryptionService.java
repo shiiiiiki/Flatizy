@@ -59,7 +59,6 @@ public class AesEncryptionService {
             Cipher cipher = Cipher.getInstance(ALGORITHM);
             cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
 
-            log.error(new String(cipher.doFinal(encrypted)));
             return new String(cipher.doFinal(encrypted));
         } catch (Exception e) {
             log.error("Decryption error", e);

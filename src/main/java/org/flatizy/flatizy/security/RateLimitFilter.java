@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -19,8 +20,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Slf4j
+@AllArgsConstructor
 public class RateLimitFilter extends OncePerRequestFilter {
 
+    private final SecurityEventLogger securityEventLogger;
     // отдельные buckets для каждого IP
     private final Map<String, Bucket> loginBuckets = new ConcurrentHashMap<>();
     private final Map<String, Bucket> webhookBuckets = new ConcurrentHashMap<>();
@@ -70,8 +73,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
         }
 
         if (bucket != null && !bucket.tryConsume(1)) {
-            log.warn("Rate limit exceeded for IP: {}, endpoint: {}, type: {}",
-                    ip, uri, endpointType);
+            securityEventLogger.logRateLimitExceeded(ip, uri, endpointType);
             response.setStatus(429);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"Too Many Requests\", \"message\": \"Перевищено ліміт запитів\"}");

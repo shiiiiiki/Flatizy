@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.flatizy.flatizy.security.SecurityEventLogger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ public class TelegramWebhookSecurityFilter extends OncePerRequestFilter {
 
     @Value("${telegram.webhook.secret-token}")
     private String expectedSecretToken;
+    private SecurityEventLogger securityEventLogger;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -31,11 +33,9 @@ public class TelegramWebhookSecurityFilter extends OncePerRequestFilter {
             request.getMethod().equals("POST")) {
 
             String headerToken = request.getHeader("X-Telegram-Bot-Api-Secret-Token");
-            log.info("Expected: '{}', Got: '{}'", expectedSecretToken, headerToken);
 
             if (headerToken == null || !headerToken.equals(expectedSecretToken)) {
-                log.warn("Unauthorized webhook access attempt from IP: {}, endpoint: {}",
-                         getClientIp(request), request.getRequestURI());
+                securityEventLogger.logWebhookUnauthorized(getClientIp(request));
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("{\"error\": \"Unauthorized\"}");
                 return;
