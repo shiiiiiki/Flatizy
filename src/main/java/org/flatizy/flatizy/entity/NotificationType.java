@@ -17,6 +17,6 @@ public class NotificationType {
     @Enumerated(EnumType.STRING)
     private NotificationTypeCode code;
 
-    private String title;       // Название
-    private String description; // Описание
+    private String title;
+    private String description;
 }

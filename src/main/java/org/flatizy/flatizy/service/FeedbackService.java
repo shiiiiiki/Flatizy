@@ -43,7 +43,6 @@ public class FeedbackService {
             dto.setFirstName(user.getFirstName());
             dto.setLastName(user.getLastName());
 
-            // Получаем первую квартиру пользователя для информации
             List<org.flatizy.flatizy.entity.Apartment> apartments = userApartmentService.getApartmentsByUser(user);
             if (!apartments.isEmpty()) {
                 var apartment = apartments.get(0);

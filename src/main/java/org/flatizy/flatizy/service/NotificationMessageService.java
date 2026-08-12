@@ -32,11 +32,6 @@ public class NotificationMessageService {
     private final UserNotificationSettingRepository userNotificationSettingRepo;
     private final TelegramBot telegramBot;
 
-    /**
-     * Отправка уведомления пользователям:
-     * - Если sendNow = true, отправляется сразу
-     * - Если sendNow = false, планируется на указанное время
-     */
     public void sendNotification(SendNotificationDto dto) {
         Optional<NotificationType> notificationTypeOpt = notificationTypeRepo.findById(dto.getNotificationTypeId());
 
@@ -60,9 +55,6 @@ public class NotificationMessageService {
         }
     }
 
-    /**
-     * Отправка уведомления сразу всем пользователям, у которых оно включено
-     */
     @Async
     public void sendNotificationImmediately(NotificationType notificationType, String text) {
         List<User> users = userNotificationSettingRepo.findUsersWithNotificationEnabled(notificationType);
@@ -88,9 +80,6 @@ public class NotificationMessageService {
         }
     }
 
-    /**
-     * Планирование уведомления на определенное время
-     */
     public void scheduleNotification(NotificationType notificationType, String text, LocalDateTime scheduledAt) {
         ScheduledNotification notification = new ScheduledNotification();
         notification.setNotificationType(notificationType);
@@ -104,11 +93,7 @@ public class NotificationMessageService {
         log.info("Notification scheduled for {}", scheduledAt);
     }
 
-    /**
-     * Проверка и отправка планированных уведомлений (запускается каждую минуту)
-     */
-    //todo reduce to min before release
-    @Scheduled(fixedDelay = 600000) // Каждую минуту
+    @Scheduled(fixedDelay = 600000)
     public void processPendingNotifications() {
         List<ScheduledNotification> pending = scheduledNotificationRepo
                 .findByStatusAndScheduledAtBefore(NotificationStatus.SCHEDULED, LocalDateTime.now());
@@ -129,9 +114,6 @@ public class NotificationMessageService {
         }
     }
 
-    /**
-     * Отмена планированного уведомления
-     */
     public void cancelNotification(Long notificationId) {
         Optional<ScheduledNotification> notificationOpt = scheduledNotificationRepo.findById(notificationId);
 

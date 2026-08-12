@@ -120,14 +120,12 @@ public class InvoiceService {
     private void sendInvoice(Account account, File file) {
         User user = account.getUser();
 
-        // Отправляем только собственникам (OWNER)
         if (user.getRole() != UserRole.OWNER) {
             log.info("Invoice {} not sent to user {} - only OWNER role can receive invoices",
                     file.getName(), user.getId());
             return;
         }
 
-        // Проверяем наличие Telegram ID
         if (user.getTelegramId() == null) {
             log.warn("User {} has no Telegram ID, cannot send invoice {}", user.getId(), file.getName());
             return;
@@ -140,7 +138,7 @@ public class InvoiceService {
             SendDocument sendDocument = new SendDocument();
             sendDocument.setChatId(user.getTelegramId().toString());
             sendDocument.setDocument(new InputFile(file));
-            sendDocument.setCaption("💰 Квитанция на оплату\n" +
+            sendDocument.setCaption("💰 Квитанція на оплату\n" +
                     (monthYear != null ? monthYear : ""));
 
             telegramBot.execute(sendDocument);
@@ -154,7 +152,6 @@ public class InvoiceService {
     }
 
     private String extractMonthYear(String text) {
-        // Ищем месяц и год в формате "Липень 2025 р" или похожем
         Pattern pattern = Pattern.compile("([А-Яа-яїєі]+)\\s+(\\d{4})\\s*р", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(text);
         if (matcher.find()) {

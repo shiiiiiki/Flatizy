@@ -27,16 +27,7 @@ public class NotificationController {
     private final NotificationTypeRepository notificationTypeRepository;
     private final ScheduledNotificationRepository scheduledNotificationRepository;
 
-    /**
-     * Отправка уведомления пользователям
-     * POST /api/notifications/send
-     * Body: {
-     *   "text": "Текст уведомления",
-     *   "typeNotification": 1,
-     *   "sendTime": "2026-02-21T15:30:00",
-     *   "isSendNow": true
-     * }
-     */
+
     @PostMapping("/send")
     public ResponseEntity<String> sendNotification(@RequestBody SendNotificationDto dto) {
         try {
@@ -68,10 +59,6 @@ public class NotificationController {
                 .toList();
     }
 
-    /**
-     * Получение всех типов уведомлений
-     * GET /api/notifications/types
-     */
     @GetMapping("/types")
     public ResponseEntity<List<NotificationTypeDto>> getNotificationTypes() {
         List<NotificationType> types = notificationTypeRepository.findAll();
@@ -88,10 +75,6 @@ public class NotificationController {
         return ResponseEntity.ok(dtos);
     }
 
-    /**
-     * Отмена запланированного уведомления
-     * DELETE /api/notifications/{notificationId}
-     */
     @DeleteMapping("/{notificationId}")
     public ResponseEntity<String> cancelNotification(@PathVariable Long notificationId) {
         try {

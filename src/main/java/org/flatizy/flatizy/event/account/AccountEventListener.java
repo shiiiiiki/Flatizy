@@ -49,7 +49,7 @@ public class AccountEventListener {
                         log.error("Account {} marked as FAILED", accountId);
                     }
                     try {
-                        Thread.sleep(1000); // пауза
+                        Thread.sleep(1000);
                     } catch (InterruptedException ignored) {
                     }
                 }

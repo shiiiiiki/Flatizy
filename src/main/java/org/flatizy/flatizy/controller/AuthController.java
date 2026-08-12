@@ -8,6 +8,8 @@ import org.flatizy.flatizy.security.AesEncryptionService;
 import org.flatizy.flatizy.service.AuthService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
 @AllArgsConstructor
@@ -28,5 +30,10 @@ public class AuthController {
     @GetMapping("/auth/encrypt")
     public String encrypt(@RequestParam String value) {
         return aesEncryptionService.encrypt(value);
+    }
+
+    @PostMapping("/auth/decrypt")
+    public String decrypt(@RequestBody Map<String, String> body) {
+        return aesEncryptionService.decrypt(body.get("email"));
     }
 }

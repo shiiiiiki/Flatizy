@@ -1,15 +1,18 @@
 package org.flatizy.flatizy.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.flatizy.flatizy.entity.User;
 import org.flatizy.flatizy.entity.dto.LoginResponse;
 import org.flatizy.flatizy.entity.enums.UserRole;
 import org.flatizy.flatizy.repository.UserRepository;
+import org.flatizy.flatizy.security.AesEncryptionService;
 import org.flatizy.flatizy.security.JwtService;
 import org.flatizy.flatizy.security.SecurityEventLogger;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -18,11 +21,18 @@ public class AuthService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final SecurityEventLogger securityEventLogger;
+    private final AesEncryptionService aesEncryptionService;
 
     public LoginResponse login(String email, String password, String ip) {
         try {
             User user = userRepository.findAll().stream()
-                    .filter(u -> email.equals(u.getEmail()))
+                    .filter(u -> {
+                        try {
+                            return email.equals(aesEncryptionService.decrypt(u.getEmail()));
+                        } catch (Exception e) {
+                            return false;
+                        }
+                    })
                     .findFirst()
                     .orElseThrow(() -> new RuntimeException("User not found"));
 

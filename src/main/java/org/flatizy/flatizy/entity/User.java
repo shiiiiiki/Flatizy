@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.flatizy.flatizy.entity.enums.UserRole;
-import org.flatizy.flatizy.security.EncryptedStringConverter;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -26,20 +25,19 @@ public class User {
     private Integer id;
     @Column(name = "telegram_id", unique = true)
     private Long telegramId;
-    @Convert(converter = EncryptedStringConverter.class)
+
     @Column(name = "identification_number", unique = true)
     private String identificationNumber;
     @Column(unique = true)
     private String password;
     @Column(unique = true)
-    //todo add a way to send bill to email if no telegram
-    @Convert(converter = EncryptedStringConverter.class)
+
     private String email;
     @Column(name = "first_name")
     private String firstName;
     @Column(name = "last_name")
     private String lastName;
-    @Convert(converter = EncryptedStringConverter.class)
+
     @Column(unique = true)
     private String phone;
     @Column(name = "bot_started")

@@ -26,7 +26,7 @@ public class NotificationService {
         return settingRepo
                 .findByUserAndNotificationType(user, type)
                 .map(UserNotificationSetting::isEnabled)
-                .orElse(true); // по умолчанию ВКЛ
+                .orElse(true);
     }
 
     public void toggle(User user, NotificationType type) {

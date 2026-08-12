@@ -19,9 +19,6 @@ public class FeedbackController {
 
     private final FeedbackService feedbackService;
 
-    /**
-     * Получить все feedbacks в формате (айди, имя, фамилия, номер квартиры и дома, текст, дата создания)
-     */
     @GetMapping
     public ResponseEntity<List<FeedbackDto>> getAllFeedbacks() {
         log.info("Getting all feedbacks");

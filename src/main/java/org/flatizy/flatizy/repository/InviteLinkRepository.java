@@ -13,34 +13,16 @@ import java.util.Optional;
 @Repository
 public interface InviteLinkRepository extends JpaRepository<InviteLink, Integer> {
 
-    /**
-     * Найти ссылку по коду
-     */
     Optional<InviteLink> findByCode(String code);
 
-    /**
-     * Найти все активные ссылки созданные пользователем
-     */
     List<InviteLink> findByCreatorAndActiveTrue(User creator);
 
-    /**
-     * Найти все ссылки созданные пользователем
-     */
     List<InviteLink> findByCreatorOrderByCreatedAtDesc(User creator);
 
-    /**
-     * Найти все активные ссылки, срок которых истек
-     */
     List<InviteLink> findByActiveTrueAndExpiresAtBefore(LocalDateTime dateTime);
 
-    /**
-     * Проверить существует ли активная ссылка с данным кодом
-     */
     boolean existsByCodeAndActiveTrue(String code);
 
-    /**
-     * Получить статистику по ссылкам пользователя
-     */
     @Query("SELECT COUNT(il) FROM InviteLink il WHERE il.creator = :creator AND il.active = true")
     long countActiveByCreator(User creator);
 

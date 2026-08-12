@@ -9,7 +9,6 @@ public enum UserSessionState {
 
     CREATING_FEEDBACK,
 
-    // Новые состояния для создания заявок
     CREATING_REQUEST_SELECTING_TYPE,
     CREATING_REQUEST_SELECTING_APARTMENT,
     CREATING_REQUEST_ENTERING_DESCRIPTION

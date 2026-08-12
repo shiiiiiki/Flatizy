@@ -4,15 +4,15 @@ import lombok.Getter;
 
 @Getter
 public enum RequestType {
-    ELEVATOR_NOT_WORKING("Лифт не работает"),
-    WATER_ISSUE("Проблема с водой"),
-    HEATING_ISSUE("Проблема с отоплением"),
-    ELECTRICITY_ISSUE("Проблема с электричеством"),
-    PLUMBING("Сантехника"),
-    CLEANING("Уборка"),
+    ELEVATOR_NOT_WORKING("Ліфт не працює"),
+    WATER_ISSUE("Проблема з водопостачанням"),
+    HEATING_ISSUE("Проблема з опаленням"),
+    ELECTRICITY_ISSUE("Проблема з електропостачанням"),
+    PLUMBING("Сантехніка"),
+    CLEANING("Прибирання"),
     REPAIR("Ремонт"),
-    NOISE_COMPLAINT("Жалоба на шум"),
-    OTHER("Другое");
+    NOISE_COMPLAINT("Скарга на шум"),
+    OTHER("Інше");
 
     private final String displayName;
 

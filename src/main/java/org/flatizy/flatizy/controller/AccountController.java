@@ -29,20 +29,17 @@ public class AccountController {
         return ResponseEntity.ok(accountService.validateAccountRequest(payload));
     }
 
-    //todo maybe remove because not necessary
     @PostMapping("/update/status")
     public ResponseEntity<AccountStatusUpdateDto> updateStatus(@RequestBody AccountStatusUpdateDto dto){
         log.info("Receive updated status: {}", dto);
         return ResponseEntity.ok(accountService.updateStatus(dto));
     }
 
-    //todo maybe remove because not necessary
     @GetMapping("/debt/{accountNumber}")
     public ResponseEntity<DebtStatusDto> getDebt(@PathVariable String accountNumber) {
         return ResponseEntity.ok(accountService.getDebt(accountNumber));
     }
 
-    //todo реализовать обновление списка должников из внешнего сервиса и добавить сумму долга, просто для информативности
     @PostMapping("/update/debt")
     public ResponseEntity<String> updateDebt(@RequestBody DebtStatusDto dto) {
         return ResponseEntity.ok(accountService.updateDebt(dto));

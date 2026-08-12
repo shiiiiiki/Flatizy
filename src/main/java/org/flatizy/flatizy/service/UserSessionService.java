@@ -80,7 +80,7 @@ public class UserSessionService {
         userSessionRepository.save(session);
     }
 
-    @Scheduled(cron = "0 0 */6 * * *") // Каждые 6 часов
+    @Scheduled(cron = "0 0 */6 * * *")
     @Transactional
     public void cleanupInactiveSessions() {
         LocalDateTime threshold = LocalDateTime.now().minusHours(24);

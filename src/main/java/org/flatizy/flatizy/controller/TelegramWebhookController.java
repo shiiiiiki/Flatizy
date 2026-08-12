@@ -20,20 +20,13 @@ public class TelegramWebhookController {
     public TelegramWebhookController(TelegramUpdateHandler updateHandler) {
         this.updateHandler = updateHandler;
     }
-
-    /**
-     * Webhook endpoint для получения updates от Telegram
-     * Проверка X-Telegram-Bot-Api-Secret-Token выполняется в TelegramWebhookSecurityFilter
-     */
     @PostMapping("/webhook")
     public ResponseEntity<Void> onUpdateReceived(@RequestBody Update update) {
-        // Валидация структуры update
         if (update == null || update.getUpdateId() == null) {
             log.warn("Invalid update structure received: update is null or has no updateId");
             return ResponseEntity.badRequest().build();
         }
 
-        // Безопасное логирование (без хранения чувствительных данных)
         logUpdateSafely(update);
 
         try {
@@ -45,9 +38,6 @@ public class TelegramWebhookController {
         }
     }
 
-    /**
-     * Логирование update без сохранения чувствительных данных пользователя
-     */
     private void logUpdateSafely(Update update) {
         try {
             String updateType = getUpdateType(update);

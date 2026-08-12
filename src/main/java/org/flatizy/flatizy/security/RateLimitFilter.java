@@ -24,26 +24,24 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RateLimitFilter extends OncePerRequestFilter {
 
     private final SecurityEventLogger securityEventLogger;
-    // отдельные buckets для каждого IP
     private final Map<String, Bucket> loginBuckets = new ConcurrentHashMap<>();
     private final Map<String, Bucket> webhookBuckets = new ConcurrentHashMap<>();
     private final Map<String, Bucket> apiBuckets = new ConcurrentHashMap<>();
 
-    // 5 запросов в минуту для /auth/login
+
     private Bucket createLoginBucket() {
         return Bucket.builder()
                 .addLimit(Bandwidth.classic(5, Refill.greedy(5, Duration.ofMinutes(1))))
                 .build();
     }
 
-    // 100 запросов в минуту для webhook
+
     private Bucket createWebhookBucket() {
         return Bucket.builder()
                 .addLimit(Bandwidth.classic(100, Refill.greedy(100, Duration.ofMinutes(1))))
                 .build();
     }
 
-    // 60 запросов в минуту для CRM API
     private Bucket createApiBucket() {
         return Bucket.builder()
                 .addLimit(Bandwidth.classic(60, Refill.greedy(60, Duration.ofMinutes(1))))

@@ -21,14 +21,13 @@ public class TelegramWebhookSecurityFilter extends OncePerRequestFilter {
 
     @Value("${telegram.webhook.secret-token}")
     private String expectedSecretToken;
-    private SecurityEventLogger securityEventLogger;
+    private final SecurityEventLogger securityEventLogger;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        // Проверяем только webhook endpoint
         if (request.getRequestURI().equals("/telegram/webhook") &&
             request.getMethod().equals("POST")) {
 

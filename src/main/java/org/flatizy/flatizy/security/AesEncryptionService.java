@@ -32,7 +32,6 @@ public class AesEncryptionService {
 
             byte[] encrypted = cipher.doFinal(plainText.getBytes());
 
-            // сохраняем IV + зашифрованные данные вместе
             byte[] combined = new byte[iv.length + encrypted.length];
             System.arraycopy(iv, 0, combined, 0, iv.length);
             System.arraycopy(encrypted, 0, combined, iv.length, encrypted.length);

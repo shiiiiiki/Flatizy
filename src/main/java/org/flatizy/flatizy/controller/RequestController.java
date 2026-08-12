@@ -20,9 +20,6 @@ public class RequestController {
 
     private final RequestService requestService;
 
-    /**
-     * Получить все заявки в формате (айди, тип, описание, когда создан, номер квартиры и дома)
-     */
     @GetMapping
     public ResponseEntity<List<RequestDto>> getAllRequests() {
         log.info("Получение всех заявок");
@@ -30,9 +27,6 @@ public class RequestController {
         return ResponseEntity.ok(requests);
     }
 
-    /**
-     * Обновить статус заявки с обязательным feedback при закрытии (COMPLETED/REJECTED)
-     */
     @PatchMapping("/{id}/status")
     public ResponseEntity<Object> updateRequestStatus(
             @PathVariable Integer id,
@@ -42,7 +36,6 @@ public class RequestController {
         try {
             RequestStatus newStatus = RequestStatus.valueOf(dto.getStatus().toUpperCase());
 
-            // При закрытии заявки feedback обязателен
             if ((newStatus == RequestStatus.COMPLETED || newStatus == RequestStatus.REJECTED) &&
                 (dto.getFeedback() == null || dto.getFeedback().isBlank())) {
                 return ResponseEntity.badRequest().body(Map.of(

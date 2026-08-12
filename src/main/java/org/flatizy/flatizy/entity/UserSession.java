@@ -49,7 +49,6 @@ public class UserSession {
     @Column(name = "registration_invite_code")
     private String registrationInviteCode;
 
-    // ===== НОВЫЕ поля для создания заявки =====
     @Enumerated(EnumType.STRING)
     @Column(name = "request_type")
     private RequestType requestType;

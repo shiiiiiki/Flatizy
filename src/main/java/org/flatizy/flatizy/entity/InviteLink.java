@@ -63,18 +63,14 @@ public class InviteLink {
     )
     private Set<Apartment> apartments = new HashSet<>();
 
-    /**
-     * Проверка валидности ссылки
-     */
+
     public boolean isValid() {
         return active
                 && usedCount < maxUses
                 && LocalDateTime.now().isBefore(expiresAt);
     }
 
-    /**
-     * Увеличить счетчик использований
-     */
+
     public void incrementUsage() {
         this.usedCount++;
         if (this.usedCount >= this.maxUses) {
@@ -82,16 +78,10 @@ public class InviteLink {
         }
     }
 
-    /**
-     * Получить количество оставшихся использований
-     */
     public int getRemainingUses() {
         return Math.max(0, maxUses - usedCount);
     }
 
-    /**
-     * Проверка истек ли срок действия
-     */
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expiresAt);
     }

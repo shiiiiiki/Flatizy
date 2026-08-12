@@ -1,0 +1,149 @@
+@startuml
+' Simple ER diagram for Flatizy (for section 2.6)
+' Render with PlantUML (IntelliJ DB tool or plantuml.jar)
+
+hide circle
+skinparam linetype ortho
+
+entity "users" as users {
+  * id : bigint
+  --
+  role : enum (ADMIN, OWNER, TENANT)
+  first_name : varchar
+  last_name : varchar
+  phone : encrypted (EncryptedStringConverter)
+  email : encrypted (EncryptedStringConverter)
+  identification_number : encrypted (EncryptedStringConverter)
+  telegram_id : bigint
+  bot_started : boolean
+  last_update : timestamp
+}
+
+entity "apartments" as apartments {
+  * id : bigint
+  --
+  apartment_number : varchar
+  building_number : varchar
+  house_number : varchar
+  residential_complex : varchar
+  area : numeric
+  last_update : timestamp
+}
+
+entity "user_apartments" as user_apartments {
+  * id : bigint
+  user_id : bigint <<FK>>
+  apartment_id : bigint <<FK>>
+}
+
+entity "accounts" as accounts {
+  * id : bigint
+  --
+  account_number : varchar
+  user_id : bigint <<FK>>
+  apartment_id : bigint <<FK>>
+  status : enum (PENDING, COMPLETED, FAILED)
+  sent_at : timestamp
+  created_at : timestamp
+  last_update : timestamp
+  has_debt : boolean
+  debt_amount : numeric
+  debt_start_date : timestamp
+}
+
+entity "invite_links" as invite_links {
+  * id : bigint
+  --
+  code : varchar (unique)
+  role : enum (OWNER, TENANT)
+  limit : int
+  expires_at : timestamp
+  created_by_user_id : bigint <<FK>>
+}
+
+entity "invite_link_apartments" as invite_link_apartments {
+  * id : bigint
+  invite_link_id : bigint <<FK>>
+  apartment_id : bigint <<FK>>
+}
+
+entity "user_sessions" as user_sessions {
+  * id : bigint
+  user_id : bigint <<FK>>
+  state : varchar (UserSessionState)
+  temp_data : jsonb
+  updated_at : timestamp
+}
+
+entity "requests" as requests {
+  * id : bigint
+  type : varchar
+  description : text
+  status : enum (OPEN, IN_PROGRESS, COMPLETED, REJECTED)
+  apartment_id : bigint <<FK>>
+  created_at : timestamp
+  admin_comment : text
+}
+
+entity "feedback" as feedback {
+  * id : bigint
+  user_id : bigint <<FK>>
+  apartment_id : bigint <<FK>>
+  text : text
+  created_at : timestamp
+}
+
+entity "notification_type" as notification_type {
+  * id : bigint
+  title : varchar
+  description : varchar
+}
+
+entity "user_notification_setting" as user_notification_setting {
+  * id : bigint
+  user_id : bigint <<FK>>
+  notification_type_id : bigint <<FK>>
+  enabled : boolean
+}
+
+entity "scheduled_notification" as scheduled_notification {
+  * id : bigint
+  notification_type_id : bigint <<FK>>
+  text : text
+  send_at : timestamp
+  created_by_user_id : bigint <<FK>>
+}
+
+' Relationships
+users ||--o{ user_apartments : "has"
+apartments ||--o{ user_apartments : "has"
+
+users ||--o{ accounts : "owns"
+apartments ||--o{ accounts : "for"
+
+invite_links ||--o{ invite_link_apartments : "targets"
+apartments ||--o{ invite_link_apartments : "in"
+
+users ||--o{ user_sessions : "session"
+
+notification_type ||--o{ user_notification_setting : "type"
+users ||--o{ user_notification_setting : "setting"
+
+notification_type ||--o{ scheduled_notification : "scheduled"
+
+apartments ||--o{ requests : "has"
+users ||--o{ feedback : "author"
+apartments ||--o{ feedback : "about"
+
+' Notes
+note right of accounts
+  - account_number used to identify recipient after PDF parsing
+  - only accounts with status = COMPLETED are sent
+end note
+
+note left of users
+  phone/email/identification stored encrypted via
+  EncryptedStringConverter (JPA AttributeConverter)
+end note
+
+@enduml

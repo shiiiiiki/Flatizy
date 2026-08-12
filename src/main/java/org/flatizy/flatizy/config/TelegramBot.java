@@ -59,15 +59,11 @@ public class TelegramBot extends TelegramWebhookBot {
     public void init() {
         updateHandler.setBot(this);
 
-        // Регистрирует webhook у Telegram с secret token (если указан URL)
         if (webhookUrl != null && !webhookUrl.isEmpty()) {
             registerWebhook();
         }
     }
 
-    /**
-     * Регистрирует webhook у Telegram API с secret token для проверки подлинности
-     */
     private void registerWebhook() {
         try {
             SetWebhook setWebhook = SetWebhook.builder()

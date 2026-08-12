@@ -28,27 +28,20 @@ public class InviteLinkService {
     @Value("${telegram.bot.username}")
     private String BOT_USERNAME;
 
-    /**
-     * Создать новую invite ссылку с несколькими квартирами
-     */
     @Transactional
     public InviteLink createInviteLink(User creator, UserRole targetRole, Integer maxUses,
                                        Integer expirationDays, List<Integer> apartmentIds) {
 
-        // Валидация прав создателя
         validateCreatorPermissions(creator, targetRole);
 
-        // Валидация maxUses (1-5)
         if (maxUses < 1 || maxUses > 5) {
             throw new IllegalArgumentException("Количество использований должно быть от 1 до 5");
         }
 
-        // Валидация срока действия
         if (expirationDays < 1 || expirationDays > 30) {
             throw new IllegalArgumentException("Срок действия должен быть от 1 до 30 дней");
         }
 
-        // Валидация квартир
         if (apartmentIds == null || apartmentIds.isEmpty()) {
             throw new IllegalArgumentException("Необходимо выбрать хотя бы одну квартиру");
         }
@@ -79,12 +72,6 @@ public class InviteLinkService {
         return saved;
     }
 
-    /**
-     * Валидация прав на создание ссылки
-     * ADMIN может создавать ссылки только для OWNER
-     * OWNER может создавать ссылки только для TENANT
-     * TENANT не может создавать ссылки
-     */
     private void validateCreatorPermissions(User creator, UserRole targetRole) {
         UserRole creatorRole = creator.getRole();
 
@@ -101,9 +88,6 @@ public class InviteLinkService {
         }
     }
 
-    /**
-     * Генерация уникального кода для ссылки
-     */
     private String generateUniqueCode() {
         String code;
         int attempts = 0;
@@ -124,23 +108,14 @@ public class InviteLinkService {
         return code;
     }
 
-    /**
-     * Получить полную Telegram ссылку
-     */
     public String getTelegramLink(String code) {
         return String.format("https://t.me/%s?start=%s", BOT_USERNAME, code);
     }
 
-    /**
-     * Найти ссылку по коду
-     */
     public Optional<InviteLink> findByCode(String code) {
         return inviteLinkRepository.findByCode(code);
     }
 
-    /**
-     * Проверить и использовать ссылку
-     */
     @Transactional
     public ValidationResult validateAndUse(String code) {
         Optional<InviteLink> linkOpt = inviteLinkRepository.findByCode(code);
@@ -152,13 +127,11 @@ public class InviteLinkService {
 
         InviteLink link = linkOpt.get();
 
-        // Проверка активности
         if (!link.isActive()) {
             log.warn("Попытка использовать неактивную ссылку: {}", code);
             return ValidationResult.inactive();
         }
 
-        // Проверка истечения срока
         if (link.isExpired()) {
             link.setActive(false);
             inviteLinkRepository.save(link);
@@ -166,7 +139,6 @@ public class InviteLinkService {
             return ValidationResult.expired();
         }
 
-        // Проверка лимита использований
         if (link.getUsedCount() >= link.getMaxUses()) {
             link.setActive(false);
             inviteLinkRepository.save(link);
@@ -174,7 +146,6 @@ public class InviteLinkService {
             return ValidationResult.limitReached();
         }
 
-        // Увеличиваем счетчик использований
         link.incrementUsage();
         inviteLinkRepository.save(link);
 
@@ -184,29 +155,19 @@ public class InviteLinkService {
         return ValidationResult.success(link);
     }
 
-    /**
-     * Получить все активные ссылки пользователя
-     */
     public List<InviteLink> getActiveLinks(User creator) {
         return inviteLinkRepository.findByCreatorAndActiveTrue(creator);
     }
 
-    /**
-     * Получить все ссылки пользователя
-     */
     public List<InviteLink> getAllLinks(User creator) {
         return inviteLinkRepository.findByCreatorOrderByCreatedAtDesc(creator);
     }
 
-    /**
-     * Деактивировать ссылку вручную
-     */
     @Transactional
     public void deactivateLink(Integer linkId, User user) {
         InviteLink link = inviteLinkRepository.findById(linkId)
                 .orElseThrow(() -> new IllegalArgumentException("Ссылка не найдена"));
 
-        // Проверка прав: только создатель или админ могут деактивировать
         if (!link.getCreator().getId().equals(user.getId()) && user.getRole() != UserRole.ADMIN) {
             throw new IllegalArgumentException("Нет прав на деактивацию этой ссылки");
         }
@@ -217,9 +178,6 @@ public class InviteLinkService {
         log.info("Ссылка деактивирована вручную: код={}, user={}", link.getCode(), user.getId());
     }
 
-    /**
-     * Получить статистику по ссылкам пользователя
-     */
     public LinkStatistics getStatistics(User creator) {
         long activeCount = inviteLinkRepository.countActiveByCreator(creator);
         Long totalUsed = inviteLinkRepository.sumUsedCountByCreator(creator);
@@ -227,9 +185,6 @@ public class InviteLinkService {
         return new LinkStatistics(activeCount, totalUsed != null ? totalUsed : 0);
     }
 
-    /**
-     * Автоматическая деактивация истекших ссылок (каждый час)
-     */
     @Scheduled(cron = "0 0 * * * *")
     @Transactional
     public void deactivateExpiredLinks() {
@@ -251,13 +206,6 @@ public class InviteLinkService {
         inviteLinkRepository.delete(link);
     }
 
-    // ===============================
-    // ВСПОМОГАТЕЛЬНЫЕ КЛАССЫ
-    // ===============================
-
-    /**
-     * Результат валидации ссылки
-     */
     public static class ValidationResult {
         private final boolean valid;
         private final String errorMessage;
@@ -302,8 +250,6 @@ public class InviteLinkService {
         }
     }
 
-    /**
-     * Статистика по ссылкам
-     */
-    public record LinkStatistics(long activeLinks, long totalUsages) {}
+    public record LinkStatistics(long activeLinks, long totalUsages) {
+    }
 }

@@ -5,10 +5,10 @@ import lombok.Getter;
 
 @Getter
 public enum RequestStatus {
-    PENDING("В ожидании"),
-    IN_PROGRESS("В работе"),
-    COMPLETED("Выполнено"),
-    REJECTED("Отклонено");
+    PENDING("В очікуванні"),
+    IN_PROGRESS("В роботі"),
+    COMPLETED("Виконано"),
+    REJECTED("Відхилено");
 
     private final String displayName;
 

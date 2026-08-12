@@ -21,6 +21,5 @@ public class UserRegistrationDto {
     private String phone;
     private UserRole role;
 
-    // IDs выбранных квартир
     private List<Integer> apartmentIds;
 }
